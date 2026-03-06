@@ -1,0 +1,51 @@
+@import './breakpoints.css';
+
+:root {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text',
+    system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+  color: #e5f0ff;
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.25), transparent),
+    radial-gradient(circle at top right, rgba(59, 130, 246, 0.3), transparent),
+    radial-gradient(circle at bottom, rgba(37, 99, 235, 0.35), #020617);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#root {
+  width: 100%;
+  max-width: 560px;
+  padding: 1rem;
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+  box-sizing: border-box;
+}
+
+a {
+  font-weight: 500;
+  color: #7dd3fc;
+  text-decoration: none;
+}
+a:hover {
+  color: #bae6fd;
+}
+
+button {
+  font-family: inherit;
+}
