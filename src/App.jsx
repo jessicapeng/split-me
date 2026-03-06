@@ -128,7 +128,12 @@ function App() {
             aria-hidden="true"
           />
           {photo && photoSelectedThisSession ? (
-            <div className="split-form">
+            <div className="photo-preview-section">
+              <img
+                src={photo}
+                alt="Receipt preview"
+                className="receipt-thumbnail"
+              />
               <button
                 type="button"
                 className="submit-btn"
