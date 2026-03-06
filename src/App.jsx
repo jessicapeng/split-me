@@ -126,29 +126,29 @@ function App() {
           />
           {photo && photoSelectedThisSession ? (
             <div className="photo-preview-section">
-              <img
-                src={photo}
-                alt="Receipt preview"
-                className="receipt-thumbnail"
-              />
-              <div className="action-buttons">
+              <div className="photo-container">
+                <img
+                  src={photo}
+                  alt="Receipt preview"
+                  className="receipt-thumbnail"
+                />
                 <button
                   type="button"
                   className="retake-btn"
                   onClick={handleCameraClick}
+                  aria-label="Retake photo"
                 >
                   <CameraIcon />
-                  <span>Retake</span>
-                </button>
-                <button
-                  type="button"
-                  className="submit-btn"
-                  onClick={handleSubmit}
-                  disabled={loading}
-                >
-                  {loading ? 'Processing…' : 'Submit'}
                 </button>
               </div>
+              <button
+                type="button"
+                className="submit-btn"
+                onClick={handleSubmit}
+                disabled={loading}
+              >
+                {loading ? 'Processing…' : 'Submit'}
+              </button>
               {error ? <p className="error-msg">{error}</p> : null}
             </div>
           ) : null}
