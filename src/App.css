@@ -38,6 +38,18 @@
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.6);
   margin-bottom: var(--section-gap);
   min-width: 0;
+  cursor: pointer;
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.camera-row:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.8);
+}
+
+.camera-row:active {
+  transform: translateY(0);
 }
 
 .camera-label {
@@ -60,30 +72,10 @@
   border-radius: 999px;
   background: #60a5fa;
   color: white;
-  cursor: pointer;
   box-shadow:
     0 10px 25px rgba(37, 99, 235, 0.7),
     0 0 0 1px rgba(191, 219, 254, 0.5);
-  transition:
-    transform 0.15s ease-out,
-    box-shadow 0.15s ease-out,
-    background 0.15s ease-out;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.camera-btn:hover {
-  transform: translateY(-1px);
-  background: #3b82f6;
-  box-shadow:
-    0 14px 30px rgba(37, 99, 235, 0.9),
-    0 0 0 1px rgba(191, 219, 254, 0.6);
-}
-
-.camera-btn:active {
-  transform: translateY(0);
-  box-shadow:
-    0 6px 18px rgba(37, 99, 235, 0.7),
-    0 0 0 1px rgba(191, 219, 254, 0.5);
+  pointer-events: none;
 }
 
 .camera-btn svg {
@@ -116,10 +108,17 @@
   margin-top: 1.5rem;
 }
 
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 .receipt-thumbnail {
   max-width: 250px;
   max-height: 300px;
-  width: 100%;
   height: auto;
   object-fit: contain;
   border-radius: 12px;
@@ -132,6 +131,49 @@
     max-width: 200px;
     max-height: 250px;
   }
+}
+
+.retake-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 120px;
+  padding: var(--submit-btn-padding-y) var(--submit-btn-padding-x);
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  font-size: var(--submit-btn-font);
+  font-weight: 500;
+  color: rgba(226, 232, 240, 0.96);
+  background: rgba(15, 23, 42, 0.85);
+  cursor: pointer;
+  box-shadow:
+    0 12px 30px rgba(15, 23, 42, 0.85),
+    0 0 0 1px rgba(148, 163, 184, 0.4);
+  transition:
+    transform 0.15s ease-out,
+    box-shadow 0.15s ease-out,
+    filter 0.15s ease-out;
+}
+
+.retake-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.retake-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+  box-shadow:
+    0 16px 34px rgba(15, 23, 42, 0.9),
+    0 0 0 1px rgba(148, 163, 184, 0.6);
+}
+
+.retake-btn:active {
+  transform: translateY(0);
+  box-shadow:
+    0 10px 25px rgba(15, 23, 42, 0.8),
+    0 0 0 1px rgba(148, 163, 184, 0.5);
 }
 
 .submit-btn {

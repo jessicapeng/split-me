@@ -108,17 +108,19 @@ function App() {
       <h1 className="app-title">Split Me</h1>
       {view === 'landing' ? (
         <>
-          <div className="camera-row">
+          {!photo && (
             <button
               type="button"
-              className="camera-btn"
+              className="camera-row"
               onClick={handleCameraClick}
               aria-label="Take photo"
             >
-              <CameraIcon />
+              <div className="camera-btn">
+                <CameraIcon />
+              </div>
+              <span className="camera-label">Get Started</span>
             </button>
-            <span className="camera-label">Get Started</span>
-          </div>
+          )}
           <input
             ref={fileInputRef}
             type="file"
@@ -134,14 +136,24 @@ function App() {
                 alt="Receipt preview"
                 className="receipt-thumbnail"
               />
-              <button
-                type="button"
-                className="submit-btn"
-                onClick={handleSubmit}
-                disabled={loading}
-              >
-                {loading ? 'Processing…' : 'Submit'}
-              </button>
+              <div className="action-buttons">
+                <button
+                  type="button"
+                  className="retake-btn"
+                  onClick={handleCameraClick}
+                >
+                  <CameraIcon />
+                  <span>Retake</span>
+                </button>
+                <button
+                  type="button"
+                  className="submit-btn"
+                  onClick={handleSubmit}
+                  disabled={loading}
+                >
+                  {loading ? 'Processing…' : 'Submit'}
+                </button>
+              </div>
               {error ? <p className="error-msg">{error}</p> : null}
             </div>
           ) : null}
