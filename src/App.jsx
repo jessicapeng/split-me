@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState } from 'react'
 import './App.css'
 
 const SAVED_PHOTO_KEY = 'split-me-photo'
@@ -18,11 +18,6 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [view, setView] = useState('landing')
-
-  useEffect(() => {
-    const saved = localStorage.getItem(SAVED_PHOTO_KEY)
-    if (saved) setPhoto(saved)
-  }, [])
 
   const handleCameraClick = () => {
     fileInputRef.current?.click()
