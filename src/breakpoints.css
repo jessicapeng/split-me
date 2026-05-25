@@ -1,0 +1,114 @@
+/**
+ * Breakpoints for responsive layout
+ * Use these values in media queries: max-width: 430px, 390px, 375px, etc.
+ *
+ * iPhone reference (logical CSS pixels, portrait):
+ * - iPhone SE (2nd/3rd): 375 × 667
+ * - iPhone 12/13 mini: 375 × 812
+ * - iPhone 14/15, 15 Pro: 393 × 852
+ * - iPhone 14 Plus, 15 Plus: 430 × 932
+ * - iPhone 15 Pro Max: 430 × 932
+ *
+ * Breakpoint values:
+ * - 430px: large phones (Plus, Pro Max)
+ * - 393px: standard recent iPhones
+ * - 390px: older standard
+ * - 375px: small (SE, mini)
+ * - 320px: minimum
+ */
+
+:root {
+  /* Spacing */
+  --app-padding-x: 1.5rem;
+  --app-padding-y: 1.5rem;
+  --app-padding-top: 1.25rem;
+  --app-padding-bottom: 1.5rem;
+  /* Typography */
+  --app-title-size: 1.75rem;
+  --app-title-spacing: -0.03em;
+  --camera-label-size: 0.9rem;
+  --items-title-size: 1.05rem;
+  --items-row-size: 0.94rem;
+  /* Controls */
+  --camera-btn-size: 36px;
+  --camera-icon-size: 20px;
+  --camera-row-padding-x: 0.8rem;
+  --camera-row-padding-y: 0.55rem;
+  --submit-btn-padding-x: 1.2rem;
+  --submit-btn-padding-y: 0.7rem;
+  --submit-btn-font: 0.95rem;
+  --back-btn-padding-x: 0.7rem;
+  --back-btn-padding-y: 0.3rem;
+  --back-btn-font: 0.85rem;
+  /* Gaps */
+  --section-gap: 1.75rem;
+  --items-gap: 0.75rem;
+}
+
+/* 430px - large iPhones (Plus, Pro Max) */
+@media (max-width: 430px) {
+  :root {
+    --app-padding-x: 1.25rem;
+    --app-padding-y: 1.25rem;
+    --app-padding-top: 1.1rem;
+    --app-padding-bottom: 1.35rem;
+    --app-title-size: 1.6rem;
+    --section-gap: 1.5rem;
+  }
+}
+
+/* 393px - standard recent iPhones */
+@media (max-width: 393px) {
+  :root {
+    --app-padding-x: 1.1rem;
+    --app-padding-y: 1.15rem;
+    --app-padding-top: 1rem;
+    --app-padding-bottom: 1.25rem;
+    --app-title-size: 1.55rem;
+    --camera-label-size: 0.875rem;
+    --camera-row-padding-x: 0.7rem;
+    --camera-row-padding-y: 0.5rem;
+    --submit-btn-padding-x: 1.1rem;
+    --submit-btn-padding-y: 0.65rem;
+    --submit-btn-font: 0.9rem;
+    --section-gap: 1.4rem;
+  }
+}
+
+/* 375px - small (SE, mini) */
+@media (max-width: 375px) {
+  :root {
+    --app-padding-x: 1rem;
+    --app-padding-y: 1rem;
+    --app-padding-top: 0.95rem;
+    --app-padding-bottom: 1.1rem;
+    --app-title-size: 1.45rem;
+    --camera-btn-size: 32px;
+    --camera-icon-size: 18px;
+    --camera-label-size: 0.85rem;
+    --camera-row-padding-x: 0.6rem;
+    --camera-row-padding-y: 0.45rem;
+    --submit-btn-padding-x: 1rem;
+    --submit-btn-padding-y: 0.6rem;
+    --submit-btn-font: 0.875rem;
+    --back-btn-padding-x: 0.6rem;
+    --back-btn-font: 0.8rem;
+    --items-title-size: 1rem;
+    --items-row-size: 0.9rem;
+    --section-gap: 1.25rem;
+    --items-gap: 0.65rem;
+  }
+}
+
+/* 320px - minimum */
+@media (max-width: 320px) {
+  :root {
+    --app-padding-x: 0.85rem;
+    --app-padding-y: 0.9rem;
+    --app-padding-top: 0.85rem;
+    --app-padding-bottom: 1rem;
+    --app-title-size: 1.35rem;
+    --camera-btn-size: 30px;
+    --camera-icon-size: 16px;
+  }
+}
