@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import './App.css'
+import { SplitForOthersFlow, RecipientReceiptView } from './SplitForOthers'
 
 const SAVED_PHOTO_KEY = 'split-me-photo'
 
@@ -184,9 +185,32 @@ function ReceiptScallop() {
   )
 }
 
+function ReceiptScallopTop() {
+  return (
+    <svg
+      width="100%"
+      height="10"
+      viewBox="0 0 200 10"
+      preserveAspectRatio="none"
+      style={{ display: 'block', marginBottom: 4 }}
+      aria-hidden="true"
+    >
+      <path
+        d="M0,10 Q5,0 10,10 Q15,0 20,10 Q25,0 30,10 Q35,0 40,10 Q45,0 50,10
+           Q55,0 60,10 Q65,0 70,10 Q75,0 80,10 Q85,0 90,10 Q95,0 100,10
+           Q105,0 110,10 Q115,0 120,10 Q125,0 130,10 Q135,0 140,10 Q145,0 150,10
+           Q155,0 160,10 Q165,0 170,10 Q175,0 180,10 Q185,0 190,10 Q195,0 200,10
+           L200,0 L0,0 Z"
+        fill="#ffffff"
+      />
+    </svg>
+  )
+}
+
 function Receipt() {
   return (
     <div className="receipt-card">
+      <ReceiptScallopTop />
       <div className="rc-venue">Scarpetta</div>
       <div className="rc-date">Mar 19, 2025 • 7:30 PM</div>
       <div className="rc-dashed" />
@@ -656,9 +680,21 @@ function ChoiceScreen({ onSelect, onBack }) {
 
 /* ── Main App ─────────────────────────────────────────────────── */
 
+function decodeReceiptHash() {
+  try {
+    const hash = window.location.hash
+    if (!hash.startsWith('#receipt=')) return null
+    const raw  = hash.slice('#receipt='.length)
+    return JSON.parse(decodeURIComponent(escape(atob(raw))))
+  } catch {
+    return null
+  }
+}
+
 function App() {
   const fileInputRef  = useRef(null)
   const apiPromiseRef = useRef(null)
+  const [recipientData]                                 = useState(decodeReceiptHash)
   const [photo, setPhoto]                               = useState(null)
   const [items, setItems]                               = useState(null)
   const [loading, setLoading]                           = useState(false)
@@ -720,13 +756,21 @@ function App() {
       const { items, venue, date } = await apiPromiseRef.current
       setItems(items)
       setReceiptMeta({ venue, date })
-      setView('items')
+      setView(choice === 'others' ? 'split-for-others' : 'items')
     } catch (err) {
       setError(err.message || 'Something went wrong.')
       setView('landing')
     } finally {
       setLoading(false)
     }
+  }
+
+  if (recipientData) {
+    return (
+      <div className="app">
+        <RecipientReceiptView data={recipientData} />
+      </div>
+    )
   }
 
   return (
@@ -745,6 +789,13 @@ function App() {
       {/* Choice view */}
       {view === 'choice' ? (
         <ChoiceScreen onSelect={handleChoiceSelect} onBack={() => setView('photo')} />
+      ) : view === 'split-for-others' ? (
+        <SplitForOthersFlow
+          items={items}
+          receiptMeta={receiptMeta}
+          onDone={() => { setView('landing'); setItems(null); setError(null); setReceiptMeta({ venue: null, date: null }) }}
+          onBack={() => setView('choice')}
+        />
       ) : view === 'items' ? (
         <ItemsView
           items={items}
