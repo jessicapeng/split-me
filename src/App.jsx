@@ -296,9 +296,7 @@ function ItemRow({ item, splitCount, onTap, onSplitPress }) {
             {isSolo ? (
               <span className="iv-you-pay-left">You pay ${myShare.toFixed(2)}</span>
             ) : (
-              <button type="button" className="iv-split-label-btn" onClick={e => { e.stopPropagation(); onSplitPress() }}>
-                Split with {splitCount} people <SmallGroupIcon />
-              </button>
+              <span />
             )}
             {isSolo ? (
               <button type="button" className="iv-split-pill iv-split-pill-btn" onClick={e => { e.stopPropagation(); onSplitPress() }}>
@@ -335,9 +333,128 @@ function SplitModal({ itemName, initialCount, onConfirm, onClose }) {
   )
 }
 
+function ReceiptSummaryView({ selectedItems, selections, items, receiptMeta, myTotal, onBack }) {
+  const BAD = /unknown|n\/a|not found|none|null/i
+  const venue = receiptMeta?.venue && !BAD.test(receiptMeta.venue) ? receiptMeta.venue : null
+  const date  = receiptMeta?.date  && !BAD.test(receiptMeta.date)  ? receiptMeta.date  : null
+
+  const myTax   = myTotal * 0.085
+  const myTip   = myTotal * 0.18
+  const myGrand = myTotal + myTax + myTip
+
+  return (
+    <div className="items-view">
+      <div className="iv-nav">
+        <button type="button" className="iv-nav-btn" onClick={onBack} aria-label="Back">
+          <ChevronLeftIcon />
+        </button>
+        <div className="iv-dots">
+          {[0, 1, 2, 3].map(i => (
+            <span key={i} className={`iv-dot${i === 3 ? ' iv-dot-active' : ''}`} />
+          ))}
+        </div>
+        <div className="iv-nav-btn" aria-hidden="true" style={{ visibility: 'hidden' }} />
+      </div>
+
+      <div className="iv-title-section">
+        <h2 className="iv-title">Your receipt</h2>
+        <p className="iv-subtitle">Here's what you're paying with tax and tip included</p>
+      </div>
+
+      <div className="iv-receipt-card">
+        <ZigZagTop />
+        <div className="iv-receipt-content">
+          <div className="sr-header">
+            <div className="sr-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M6 2h12a2 2 0 012 2v16a2 2 0 01-2 2H6a2 2 0 01-2-2V4a2 2 0 012-2z" stroke="#7C6FF7" strokeWidth="1.8"/>
+                <path d="M8 7h8M8 11h8M8 15h5" stroke="#7C6FF7" strokeWidth="1.8" strokeLinecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <div className="sr-venue">{venue ?? 'Your Receipt'}</div>
+              {date && <div className="iv-date">{date}</div>}
+            </div>
+          </div>
+
+          <div className="iv-dashed" />
+
+          <div className="iv-items">
+            {selectedItems.map((item, i) => {
+              const originalIdx = items.indexOf(item)
+              const split = selections[originalIdx] || 1
+              const myShare = item.price / split
+              return (
+                <div key={i} className="sr-item-row">
+                  <span className="sr-qty">{split}×</span>
+                  <span className="sr-item-name">{item.name}</span>
+                  <span className="sr-item-price">${myShare.toFixed(2)}</span>
+                </div>
+              )
+            })}
+          </div>
+
+          <div className="iv-dashed" />
+
+          <div className="iv-totals">
+            <div className="iv-total-row">
+              <span>Subtotal</span>
+              <span>${myTotal.toFixed(2)}</span>
+            </div>
+            <div className="iv-total-row">
+              <span>Tax (8.5%)</span>
+              <span>${myTax.toFixed(2)}</span>
+            </div>
+            <div className="iv-total-row">
+              <span>Tip (18%)</span>
+              <span>${myTip.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <div className="iv-dashed" style={{ marginTop: 12 }} />
+
+          <div className="iv-summary-bar" style={{ marginTop: 12 }}>
+            <div className="iv-summary-left">
+              <span className="iv-summary-label">Total</span>
+              <span className="iv-summary-sub">{selectedItems.length} item{selectedItems.length !== 1 ? 's' : ''}</span>
+            </div>
+            <div className="iv-summary-right">
+              <span className="iv-summary-amount">${myGrand.toFixed(2)}</span>
+              <ChevronDownIcon />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p className="venmo-pre-label">Then you'll pay with Venmo</p>
+
+      <a
+        className="venmo-btn"
+        href={`https://account.venmo.com/pay?amount=${myGrand.toFixed(2)}${venue ? `&note=${encodeURIComponent(venue)}` : ''}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span className="venmo-btn-text">Pay with</span>
+        <span className="venmo-btn-logo">venmo</span>
+        <svg className="venmo-btn-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M9 18l6-6-6-6" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </a>
+      <p className="venmo-secure">
+        <svg viewBox="0 0 12 14" fill="none" className="venmo-lock-icon">
+          <rect x="1" y="6" width="10" height="7" rx="2" fill="currentColor"/>
+          <path d="M3.5 6V4a2.5 2.5 0 015 0v2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+        </svg>
+        Secure checkout with Venmo
+      </p>
+    </div>
+  )
+}
+
 function ItemsView({ items, receiptMeta, onBack }) {
   const [selections, setSelections] = useState(() => new Array(items.length).fill(0))
   const [modalIdx, setModalIdx] = useState(null)
+  const [showSummary, setShowSummary] = useState(false)
 
   const handleTap = (idx) => {
     setSelections(prev => {
@@ -362,11 +479,22 @@ function ItemsView({ items, receiptMeta, onBack }) {
     const price = typeof item.price === 'number' ? item.price : 0
     return sum + price / selections[i]
   }, 0)
-  const maxSplit = selections.reduce((m, s) => Math.max(m, s), 1)
-
   const subtotal = items.reduce((sum, item) => sum + (typeof item.price === 'number' ? item.price : 0), 0)
   const tax = subtotal * 0.085
   const tip = subtotal * 0.18
+
+  if (showSummary) {
+    return (
+      <ReceiptSummaryView
+        selectedItems={selectedItems}
+        selections={selections}
+        items={items}
+        receiptMeta={receiptMeta}
+        myTotal={myTotal}
+        onBack={() => setShowSummary(false)}
+      />
+    )
+  }
 
   return (
     <div className="items-view">
@@ -438,19 +566,23 @@ function ItemsView({ items, receiptMeta, onBack }) {
       </div>
 
       {selectedItems.length > 0 && (
-        <div className="iv-summary-bar">
-          <div className="iv-summary-left">
-            <span className="iv-summary-label">You pay</span>
-            <span className="iv-summary-sub">
-              {selectedItems.length} item{selectedItems.length > 1 ? 's' : ''}
-              {maxSplit > 1 ? ` · Split with ${maxSplit} people` : ''}
-            </span>
+        <>
+          <div className="iv-summary-bar">
+            <div className="iv-summary-left">
+              <span className="iv-summary-label">You pay</span>
+              <span className="iv-summary-sub">
+                {selectedItems.length} item{selectedItems.length > 1 ? 's' : ''}
+              </span>
+            </div>
+            <div className="iv-summary-right">
+              <span className="iv-summary-amount">${myTotal.toFixed(2)}</span>
+              <ChevronDownIcon />
+            </div>
           </div>
-          <div className="iv-summary-right">
-            <span className="iv-summary-amount">${myTotal.toFixed(2)}</span>
-            <ChevronDownIcon />
-          </div>
-        </div>
+          <button type="button" className="continue-btn" onClick={() => setShowSummary(true)}>
+            Continue
+          </button>
+        </>
       )}
 
       {modalIdx !== null && (
