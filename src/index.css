@@ -1,12 +1,18 @@
 @import './breakpoints.css';
 
+html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
 :root {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text',
     system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color-scheme: dark;
-  color: #e5f0ff;
+  color-scheme: light;
+  color: #171717;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -15,22 +21,24 @@
 
 body {
   margin: 0;
-  min-width: 320px;
+  width: 100%;
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   -webkit-tap-highlight-color: transparent;
-  background: linear-gradient(180deg, #1e3a8a 0%, #60a5fa 100%);
+  background: #F6F6F7;
+  overflow-x: hidden;
 }
 
 #root {
   width: 100%;
-  max-width: 560px;
-  padding: 1rem;
-  padding-left: max(1rem, env(safe-area-inset-left));
-  padding-right: max(1rem, env(safe-area-inset-right));
+  max-width: 430px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: max(24px, env(safe-area-inset-left));
+  padding-right: max(24px, env(safe-area-inset-right));
   box-sizing: border-box;
 }
 
