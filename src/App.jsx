@@ -299,8 +299,6 @@ function ItemRow({ item, splitCount, onTap, onSplitPress }) {
   const selected = splitCount > 0
   const price    = typeof item.price === 'number' ? item.price : 0
   const myShare  = selected ? price / splitCount : 0
-  const isSolo   = splitCount === 1
-
   return (
     <button type="button" className={`iv-item-row${selected ? ' iv-item-selected' : ''}`} onClick={onTap}>
       {selected && (
@@ -317,20 +315,10 @@ function ItemRow({ item, splitCount, onTap, onSplitPress }) {
         </div>
         {selected && (
           <div className="iv-item-bottom">
-            {isSolo ? (
-              <span className="iv-you-pay-left">You pay ${myShare.toFixed(2)}</span>
-            ) : (
-              <span />
-            )}
-            {isSolo ? (
-              <button type="button" className="iv-split-pill iv-split-pill-btn" onClick={e => { e.stopPropagation(); onSplitPress() }}>
-                <SmallGroupIcon /><span>Split</span>
-              </button>
-            ) : (
-              <button type="button" className="iv-you-pay-right-btn" onClick={e => { e.stopPropagation(); onSplitPress() }}>
-                You pay ${myShare.toFixed(2)} <ChevronDownIcon />
-              </button>
-            )}
+            <span className="iv-you-pay-left">You pay ${myShare.toFixed(2)}</span>
+            <button type="button" className="iv-split-pill iv-split-pill-btn" onClick={e => { e.stopPropagation(); onSplitPress() }}>
+              <SmallGroupIcon /><span>Split</span>
+            </button>
           </div>
         )}
       </div>
@@ -449,8 +437,6 @@ function ReceiptSummaryView({ selectedItems, selections, items, receiptMeta, myT
           </div>
         </div>
       </div>
-
-      <p className="venmo-pre-label">Then you'll pay with Venmo</p>
 
       <a
         className="venmo-btn"
@@ -600,7 +586,6 @@ function ItemsView({ items, receiptMeta, onBack }) {
             </div>
             <div className="iv-summary-right">
               <span className="iv-summary-amount">${myTotal.toFixed(2)}</span>
-              <ChevronDownIcon />
             </div>
           </div>
           <button type="button" className="continue-btn" onClick={() => setShowSummary(true)}>

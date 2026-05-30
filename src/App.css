@@ -820,7 +820,7 @@
   box-sizing: border-box;
   margin-top: 14px;
   padding: 17px 24px;
-  background: #3D95CE;
+  background: #3B82F6;
   color: #ffffff;
   font-size: 1rem;
   font-weight: 600;
@@ -1700,13 +1700,11 @@
 }
 
 .sfo-chip-active {
-  background: #EFF6FF;
-  border-color: #3B82F6;
-  color: #1D4ED8;
-  font-weight: 600;
+  font-weight: 700;
+  /* background/border/color set via inline style per person's palette */
 }
 
-.sfo-chip:not(.sfo-chip-active):hover { background: #F9FAFB; }
+.sfo-chip:not(.sfo-chip-active):hover { background: #F9FAFB !important; }
 
 /* ── Assign items card (Page 2) ─────────────────────────────── */
 
@@ -1791,14 +1789,21 @@
   flex-shrink: 0;
 }
 
-.sfo-item-owner {
-  font-size: 0.7rem;
-  font-weight: 500;
-  color: #9CA3AF;
-  background: #F3F4F6;
-  border-radius: 6px;
-  padding: 2px 7px;
+.sfo-person-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
   flex-shrink: 0;
+  align-items: center;
+}
+
+.sfo-person-tag {
+  font-size: 0.68rem;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 2px 8px;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
 }
 
 /* ── Unassigned bar ─────────────────────────────────────────── */

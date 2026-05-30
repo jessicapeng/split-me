@@ -16,6 +16,22 @@ const DEMO_ITEMS = [
 const TAX_RATE  = 0.085
 const TIP_RATE  = 0.18
 
+const PALETTE = [
+  { chipBg: '#EFF6FF', chipBorder: '#93C5FD', chipText: '#1D4ED8', tagBg: '#DBEAFE', tagText: '#1E40AF' },
+  { chipBg: '#FFF7ED', chipBorder: '#FDBA74', chipText: '#C2410C', tagBg: '#FED7AA', tagText: '#9A3412' },
+  { chipBg: '#FDF4FF', chipBorder: '#D946EF', chipText: '#86198F', tagBg: '#F5D0FE', tagText: '#701A75' },
+  { chipBg: '#F0FDF4', chipBorder: '#86EFAC', chipText: '#166534', tagBg: '#BBF7D0', tagText: '#14532D' },
+  { chipBg: '#F5F3FF', chipBorder: '#C4B5FD', chipText: '#6D28D9', tagBg: '#EDE9FE', tagText: '#4C1D95' },
+  { chipBg: '#FFF1F2', chipBorder: '#FCA5A5', chipText: '#B91C1C', tagBg: '#FECACA', tagText: '#991B1B' },
+  { chipBg: '#F0FDFA', chipBorder: '#5EEAD4', chipText: '#0F766E', tagBg: '#CCFBF1', tagText: '#134E4A' },
+  { chipBg: '#FFFBEB', chipBorder: '#FCD34D', chipText: '#92400E', tagBg: '#FEF08A', tagText: '#78350F' },
+]
+
+function paletteOf(people, personId) {
+  const idx = people.findIndex(p => p.id === personId)
+  return PALETTE[(idx < 0 ? 0 : idx) % PALETTE.length]
+}
+
 let _id = 0
 function uid() { return `p${++_id}` }
 
@@ -111,16 +127,24 @@ function PageNav({ step, onBack }) {
 function ChipRow({ people, active, onSelect }) {
   return (
     <div className="sfo-chips-scroll">
-      {people.map(p => (
-        <button
-          key={p.id}
-          type="button"
-          className={`sfo-chip${active === p.id ? ' sfo-chip-active' : ''}`}
-          onClick={() => onSelect(p.id)}
-        >
-          {p.name}
-        </button>
-      ))}
+      {people.map(p => {
+        const c       = paletteOf(people, p.id)
+        const isActive = active === p.id
+        return (
+          <button
+            key={p.id}
+            type="button"
+            className={`sfo-chip${isActive ? ' sfo-chip-active' : ''}`}
+            style={isActive
+              ? { background: c.chipBg, borderColor: c.chipBorder, color: c.chipText }
+              : { background: '#ffffff', borderColor: '#E5E7EB', color: '#6B7280' }
+            }
+            onClick={() => onSelect(p.id)}
+          >
+            {p.name}
+          </button>
+        )
+      })}
     </div>
   )
 }
@@ -267,7 +291,6 @@ function UnassignedModal({ items, assignments, onClose }) {
 
 function AssignItemsPage({ people, items, assignments, setAssignments, onContinue, onBack }) {
   const [activePerson, setActivePerson] = useState(people[0]?.id ?? null)
-  const [showUnassigned, setShowUnassigned] = useState(false)
 
   const activeName  = people.find(p => p.id === activePerson)?.name ?? ''
   const personTotal = items.reduce((s, item, i) => {
@@ -276,7 +299,6 @@ function AssignItemsPage({ people, items, assignments, setAssignments, onContinu
     const price = typeof item.price === 'number' ? item.price : 0
     return s + price / assignees.length
   }, 0)
-  const unassignedCount = items.filter((_, i) => (assignments[i] || []).length === 0).length
 
   function toggleItem(idx) {
     setAssignments(prev => {
@@ -320,17 +342,13 @@ function AssignItemsPage({ people, items, assignments, setAssignments, onContinu
               const price      = typeof item.price === 'number' ? item.price : 0
               const assignees  = assignments[i] || []
               const isSelected = assignees.includes(activePerson)
-              const others     = assignees.filter(id => id !== activePerson)
               const splitCount = assignees.length
-              const myShare    = isSelected && splitCount > 1 ? price / splitCount : price
-              const otherLabel = others.length > 0
-                ? others.map(id => people.find(p => p.id === id)?.name?.split(' ')[0] ?? '').join(', ')
-                : ''
+              const displayPrice = isSelected && splitCount > 1 ? price / splitCount : price
               return (
                 <button
                   key={i}
                   type="button"
-                  className={`sfo-item-row${isSelected ? ' sfo-item-selected' : ''}${others.length > 0 && !isSelected ? ' sfo-item-other' : ''}`}
+                  className={`sfo-item-row${isSelected ? ' sfo-item-selected' : ''}`}
                   onClick={() => toggleItem(i)}
                 >
                   <div className={`sfo-checkbox${isSelected ? ' sfo-checkbox-on' : ''}`}>
@@ -341,10 +359,20 @@ function AssignItemsPage({ people, items, assignments, setAssignments, onContinu
                     )}
                   </div>
                   <span className="sfo-item-name">{item.name}</span>
-                  {otherLabel && <span className="sfo-item-owner">{otherLabel}</span>}
-                  <span className="sfo-item-price">
-                    {isSelected && splitCount > 1 ? `$${myShare.toFixed(2)}` : `$${price.toFixed(2)}`}
-                  </span>
+                  {assignees.length > 0 && (
+                    <div className="sfo-person-tags">
+                      {assignees.map(id => {
+                        const c    = paletteOf(people, id)
+                        const name = people.find(p => p.id === id)?.name?.split(' ')[0] ?? '?'
+                        return (
+                          <span key={id} className="sfo-person-tag" style={{ background: c.tagBg, color: c.tagText }}>
+                            {name}
+                          </span>
+                        )
+                      })}
+                    </div>
+                  )}
+                  <span className="sfo-item-price">${displayPrice.toFixed(2)}</span>
                 </button>
               )
             })}
@@ -353,20 +381,10 @@ function AssignItemsPage({ people, items, assignments, setAssignments, onContinu
       </div>
 
       <div className="sfo-sticky-bottom">
-        {unassignedCount > 0 && (
-          <div className="sfo-unassigned-bar">
-            <span className="sfo-ua-label">Unassigned items ({unassignedCount})</span>
-            <button type="button" className="sfo-view-link" onClick={() => setShowUnassigned(true)}>View</button>
-          </div>
-        )}
         <button type="button" className="continue-btn" onClick={onContinue}>
           Continue
         </button>
       </div>
-
-      {showUnassigned && (
-        <UnassignedModal items={items} assignments={assignments} onClose={() => setShowUnassigned(false)} />
-      )}
     </div>
   )
 }
