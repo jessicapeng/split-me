@@ -150,9 +150,10 @@
   flex: 0 0 38%;
   min-width: 0;
   background: #FAFAFA;
-  border-radius: 18px;
-  padding: 10px 10px 0;
+  border-radius: 0 0 18px 18px;
+  padding: 0 10px 10px;
   border: 0.5px solid #EBEBEB;
+  border-top: none;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -299,6 +300,7 @@
 
 .feature-row {
   width: 100%;
+  margin-top: 22px;
   display: flex;
   background: #ffffff;
   border-radius: 28px;
@@ -307,7 +309,6 @@
   position: relative;
   z-index: 1;
   height: 140px;
-  margin-top: 22px;
 }
 
 .feature-item {
@@ -332,6 +333,8 @@
   justify-content: center;
 }
 
+.feature-icon-bg svg { width: 22px; height: 22px; }
+
 .feature-label {
   font-size: 15px;
   font-weight: 700;
@@ -347,6 +350,32 @@
   max-width: 90px;
 }
 
+/* ── Mobile overrides (landing page only) ────────────────────── */
+@media (max-width: 480px) {
+  .logo-section { gap: 10px; margin-top: 20px; margin-bottom: 16px; }
+  .app-icon-square { width: 56px; height: 56px; border-radius: 18px; }
+  .title-dark, .title-blue { font-size: 36px; }
+
+  .demo-card { height: 180px; padding: 12px; gap: 8px; border-radius: 24px; }
+  .receipt-card { border-radius: 0 0 14px 14px; padding: 0 8px 8px; }
+
+  .split-panel { gap: 5px; }
+  .split-title { font-size: 11px; }
+  .user-pill { height: 28px; padding: 0 8px; border-radius: 10px; gap: 5px; }
+  .user-avatar { width: 17px; height: 17px; font-size: 8px; }
+  .pill-name, .pill-amount { font-size: 9px; }
+  .settled-pill { font-size: 9px; padding: 4px 8px; gap: 3px; }
+
+  .feature-row { height: 96px; margin-top: 10px; border-radius: 22px; }
+  .feature-item { padding: 10px 6px 8px; gap: 3px; }
+  .feature-icon-bg { width: 30px; height: 30px; }
+  .feature-icon-bg svg { width: 16px; height: 16px; }
+  .feature-label { font-size: 12px; }
+  .feature-sub { font-size: 9.5px; max-width: 80px; }
+
+  .cta-section { margin-top: 16px; }
+}
+
 /* ── CTA ─────────────────────────────────────────────────────── */
 
 .cta-section {
@@ -354,7 +383,7 @@
   flex-direction: column;
   align-items: center;
   gap: 0;
-  margin-top: 28px;
+  margin-top: 16px;
   margin-bottom: 12px;
   position: relative;
   z-index: 1;
@@ -1320,3 +1349,711 @@
   opacity: 0;
   pointer-events: none;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   Split-For-Others Flow
+══════════════════════════════════════════════════════════════════ */
+
+@keyframes sfoIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Page wrapper */
+.sfo-page {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 130px;
+  animation: sfoIn 0.38s ease-out both;
+}
+
+.sfo-success-page {
+  align-items: center;
+  padding-top: 12px;
+}
+
+/* ── White card ─────────────────────────────────────────────── */
+
+.sfo-card {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* ── Stepper (Page 1) ───────────────────────────────────────── */
+
+.sfo-stepper-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+}
+
+.sfo-stepper-label {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #1A1A2E;
+}
+
+.sfo-stepper {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.sfo-stepper-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid #E5E7EB;
+  background: #F9FAFB;
+  font-size: 1.25rem;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.12s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sfo-stepper-btn:hover:not(:disabled) { background: #F3F4F6; }
+.sfo-stepper-btn:active:not(:disabled) { transform: scale(0.92); }
+.sfo-stepper-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.sfo-stepper-num {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1A1A2E;
+  min-width: 1.8rem;
+  text-align: center;
+}
+
+.sfo-card-divider {
+  height: 1px;
+  background: #F0F0F2;
+}
+
+/* ── People list (Page 1) ───────────────────────────────────── */
+
+.sfo-people-list {
+  padding: 4px 0;
+}
+
+.sfo-person-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 20px;
+  border-bottom: 1px solid #F6F6F8;
+  transition: background 0.12s ease;
+}
+
+.sfo-person-row:last-child { border-bottom: none; }
+.sfo-person-row:hover { background: #FAFAFA; }
+
+.sfo-drag-handle {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  cursor: grab;
+  opacity: 0.7;
+}
+
+.sfo-person-name {
+  flex: 1;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #1A1A2E;
+}
+
+.sfo-person-name-input {
+  flex: 1;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #1A1A2E;
+  font-family: inherit;
+  background: none;
+  border: none;
+  border-bottom: 1.5px solid #D1D5DB;
+  outline: none;
+  padding: 2px 0;
+  min-width: 0;
+}
+
+.sfo-person-name-input::placeholder {
+  color: #C0C4CE;
+  font-weight: 400;
+}
+
+.sfo-person-name-input:focus {
+  border-bottom-color: #3B82F6;
+}
+
+.sfo-paid-pill {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #16A34A;
+  background: #DCFCE7;
+  border-radius: 999px;
+  padding: 3px 10px;
+  flex-shrink: 0;
+  letter-spacing: 0.01em;
+}
+
+.sfo-remove-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: #F3F4F6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.12s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sfo-remove-btn:hover  { background: #E5E7EB; }
+.sfo-remove-btn:active { transform: scale(0.92); }
+
+.sfo-add-btn {
+  width: 100%;
+  padding: 15px 20px;
+  background: none;
+  border: none;
+  border-top: 1.5px dashed #D1D5DB;
+  color: #3B82F6;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sfo-add-btn:hover { background: #F0F7FF; }
+.sfo-add-btn:active { background: #E0EFFF; }
+
+/* ── Sticky bottom bar ─────────────────────────────────────── */
+
+.sfo-sticky-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
+  padding: 10px max(24px, env(safe-area-inset-left)) max(18px, env(safe-area-inset-bottom));
+  background: linear-gradient(to top, #F0F2FA 72%, rgba(240,242,250,0));
+  box-sizing: border-box;
+  z-index: 50;
+}
+
+/* ── Add person modal ──────────────────────────────────────── */
+
+.sfo-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 200;
+}
+
+.sfo-modal {
+  background: #ffffff;
+  border-radius: 26px 26px 0 0;
+  padding: 8px 22px max(24px, env(safe-area-inset-bottom));
+  width: 100%;
+  max-width: 430px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 82vh;
+  overflow-y: auto;
+  animation: sfoIn 0.28s cubic-bezier(0.34, 1.2, 0.64, 1) both;
+}
+
+.sfo-modal-handle {
+  width: 36px;
+  height: 4px;
+  background: #D1D5DB;
+  border-radius: 2px;
+  align-self: center;
+  margin: 4px 0 2px;
+  flex-shrink: 0;
+}
+
+.sfo-modal-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1A1A2E;
+  text-align: center;
+}
+
+.sfo-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #F3F4F6;
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.sfo-search-input {
+  flex: 1;
+  border: none;
+  background: none;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  color: #1A1A2E;
+  outline: none;
+}
+
+.sfo-search-input::placeholder { color: #9CA3AF; }
+
+.sfo-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sfo-suggestion-pill {
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1.5px solid #E5E7EB;
+  background: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sfo-suggestion-pill:hover  { background: #EFF6FF; border-color: #93C5FD; color: #1D4ED8; }
+.sfo-suggestion-pill:active { transform: scale(0.95); }
+
+.sfo-contacts-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: #3B82F6;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 2px 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sfo-modal-hint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #9CA3AF;
+  text-align: center;
+}
+
+/* ── Person chips (Pages 2 & 3) ─────────────────────────────── */
+
+.sfo-chips-scroll {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 0 14px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.sfo-chips-scroll::-webkit-scrollbar { display: none; }
+
+.sfo-chip {
+  flex-shrink: 0;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1.5px solid #E5E7EB;
+  background: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6B7280;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sfo-chip-active {
+  background: #EFF6FF;
+  border-color: #3B82F6;
+  color: #1D4ED8;
+  font-weight: 600;
+}
+
+.sfo-chip:not(.sfo-chip-active):hover { background: #F9FAFB; }
+
+/* ── Assign items card (Page 2) ─────────────────────────────── */
+
+.sfo-assign-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.sfo-assign-label {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #1A1A2E;
+}
+
+.sfo-assign-total {
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.sfo-items-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.sfo-item-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 6px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #F3F4F6;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sfo-item-row:last-child { border-bottom: none; }
+.sfo-item-row:hover { background: #F9FAFB; }
+.sfo-item-row:active { transform: scale(0.99); }
+
+.sfo-item-selected { background: #EFF6FF !important; }
+.sfo-item-other    { opacity: 0.55; }
+
+.sfo-checkbox {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #D1D5DB;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.16s ease, border-color 0.16s ease;
+}
+
+.sfo-checkbox-on {
+  background: #3B82F6;
+  border-color: #3B82F6;
+  animation: checkPop 0.22s ease-out both;
+}
+
+.sfo-item-name {
+  flex: 1;
+  font-size: 0.9rem;
+  color: #1A1A2E;
+  font-weight: 450;
+  text-align: left;
+}
+
+.sfo-item-price {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1A1A2E;
+  flex-shrink: 0;
+}
+
+.sfo-item-owner {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #9CA3AF;
+  background: #F3F4F6;
+  border-radius: 6px;
+  padding: 2px 7px;
+  flex-shrink: 0;
+}
+
+/* ── Unassigned bar ─────────────────────────────────────────── */
+
+.sfo-unassigned-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 16px;
+  background: #FFF7ED;
+  border: 1.5px solid #FED7AA;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.sfo-ua-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #92400E;
+}
+
+.sfo-view-link {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #EA580C;
+  background: none;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Unassigned modal list ──────────────────────────────────── */
+
+.sfo-unassigned-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 42vh;
+  overflow-y: auto;
+}
+
+.sfo-unassigned-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.sfo-unassigned-row:last-child { border-bottom: none; }
+
+.sfo-ua-name  { font-size: 0.9rem; color: #1A1A2E; font-weight: 450; }
+.sfo-ua-price { font-size: 0.9rem; color: #374151; font-weight: 600; }
+
+.sfo-empty-note {
+  text-align: center;
+  font-size: 0.875rem;
+  color: #9CA3AF;
+  padding: 16px 0;
+  margin: 0;
+}
+
+/* ── Review receipt card (Page 3) ───────────────────────────── */
+
+.sfo-review-head {
+  margin-bottom: 2px;
+}
+
+.sfo-review-name {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1A1A2E;
+}
+
+.sfo-review-venue {
+  display: block;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.74rem;
+  color: #9CA3AF;
+  margin-top: 2px;
+}
+
+.sfo-review-items {
+  display: flex;
+  flex-direction: column;
+}
+
+.sfo-review-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.sfo-review-row:last-child { border-bottom: none; }
+
+/* ── Total card ─────────────────────────────────────────────── */
+
+.sfo-total-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  background: #F0FDF4;
+  border: 1.5px solid #86EFAC;
+  border-radius: 16px;
+  margin-top: 12px;
+}
+
+.sfo-total-card-success {
+  width: 100%;
+  margin-top: 14px;
+  padding: 20px 24px;
+  box-sizing: border-box;
+}
+
+.sfo-total-label  { font-size: 0.9rem; font-weight: 600; color: #15803D; }
+.sfo-total-amount { font-size: 1.5rem; font-weight: 700; color: #16A34A; }
+
+/* ── Send request cards (Page 4) ────────────────────────────── */
+
+.sfo-request-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sfo-request-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.sfo-req-left  { display: flex; flex-direction: column; gap: 3px; }
+.sfo-req-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+
+.sfo-req-name   { font-size: 0.9375rem; font-weight: 600; color: #1A1A2E; }
+.sfo-req-handle { font-size: 0.78rem; color: #9CA3AF; }
+.sfo-req-amount { font-size: 1.1rem; font-weight: 700; color: #1A1A2E; }
+
+/* ── Status badges ──────────────────────────────────────────── */
+
+.sfo-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.01em;
+}
+
+.sfo-badge-ready   { background: #EFF6FF; color: #1D4ED8; }
+.sfo-badge-sent    { background: #EFF6FF; color: #1D4ED8; }
+.sfo-badge-paid    { background: #DCFCE7; color: #15803D; }
+.sfo-badge-pending { background: #F3F4F6; color: #6B7280; }
+
+/* ── Success screen (Page 5) ────────────────────────────────── */
+
+.sfo-check-circle {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: #22C55E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 32px rgba(34, 197, 94, 0.30);
+  margin-bottom: 18px;
+  animation: checkPop 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.sfo-success-title {
+  margin: 0 0 6px;
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #1A1A2E;
+  letter-spacing: -0.4px;
+  text-align: center;
+}
+
+.sfo-success-subtitle {
+  margin: 0 0 20px;
+  font-size: 0.9rem;
+  color: #9CA3AF;
+  text-align: center;
+}
+
+.sfo-status-list {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.sfo-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.sfo-status-row:last-child { border-bottom: none; }
+
+.sfo-status-left { display: flex; flex-direction: column; gap: 2px; }
+.sfo-status-name { font-size: 0.9375rem; font-weight: 600; color: #1A1A2E; }
+.sfo-status-sub  { font-size: 0.8rem; color: #9CA3AF; }
+
+/* ── Copy link button (Page 4) ──────────────────────────────── */
+
+.sfo-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1.5px solid #D1D5DB;
+  background: #F9FAFB;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #374151;
+  font-family: inherit;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.14s ease, border-color 0.14s ease, color 0.14s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+
+.sfo-copy-btn:hover { background: #F3F4F6; border-color: #9CA3AF; }
+.sfo-copy-btn:active { transform: scale(0.95); }
+
+.sfo-copy-btn-done {
+  background: #DCFCE7 !important;
+  border-color: #86EFAC !important;
+  color: #15803D !important;
+}
+
+/* ── Recipient receipt page branding ───────────────────────── */
+
+.sfo-recipient-brand {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0;
+  padding: 32px 0 20px;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  line-height: 1;
+}
+
