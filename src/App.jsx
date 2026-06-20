@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import './App.css'
 import { SplitForOthersFlow, RecipientReceiptView } from './SplitForOthers'
+import { openWithAppFallback } from './paymentLinks'
 
 const SAVED_PHOTO_KEY = 'split-me-photo'
 
@@ -438,18 +439,23 @@ function ReceiptSummaryView({ selectedItems, selections, items, receiptMeta, myT
         </div>
       </div>
 
-      <a
+      <button
+        type="button"
         className="venmo-btn"
-        href={`https://account.venmo.com/pay?amount=${myGrand.toFixed(2)}${venue ? `&note=${encodeURIComponent(venue)}` : ''}`}
-        target="_blank"
-        rel="noopener noreferrer"
+        onClick={() => {
+          const note   = venue ? `&note=${encodeURIComponent(venue)}` : ''
+          openWithAppFallback(
+            `venmo://paycharge?txn=pay&amount=${myGrand.toFixed(2)}${note}`,
+            `https://account.venmo.com/pay?amount=${myGrand.toFixed(2)}${note}`,
+          )
+        }}
       >
         <span className="venmo-btn-text">Pay with</span>
         <span className="venmo-btn-logo">venmo</span>
         <svg className="venmo-btn-icon" viewBox="0 0 24 24" fill="none">
           <path d="M9 18l6-6-6-6" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
-      </a>
+      </button>
       <p className="venmo-secure">
         <svg viewBox="0 0 12 14" fill="none" className="venmo-lock-icon">
           <rect x="1" y="6" width="10" height="7" rx="2" fill="currentColor"/>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { isMobileDevice, openWithAppFallback } from './paymentLinks'
 
 const DEMO_ITEMS = [
   { name: 'Fried Chicken Ramen',   price: 18.00 },
@@ -44,6 +45,24 @@ function getPersonTotal(items, assignments, personId) {
   }, 0)
   return sub * (1 + TAX_RATE + TIP_RATE)
 }
+
+/* ── Payment method (cached across sessions) ─────────────────── */
+
+const PAY_INFO_KEY = 'split-me-pay-info'
+
+function loadPayInfo() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(PAY_INFO_KEY))
+    return { method: parsed?.method === 'zelle' ? 'zelle' : 'venmo', venmo: parsed?.venmo || '', zelle: parsed?.zelle || '' }
+  } catch {
+    return { method: 'venmo', venmo: '', zelle: '' }
+  }
+}
+
+function savePayInfo(info) {
+  try { localStorage.setItem(PAY_INFO_KEY, JSON.stringify(info)) } catch { /* storage unavailable */ }
+}
+
 
 /* ── Icons ─────────────────────────────────────────────────────── */
 
@@ -473,7 +492,7 @@ function ReviewReceiptsPage({ people, items, assignments, receiptMeta, onContinu
 
 /* ── Link generation ───────────────────────────────────────────── */
 
-function buildReceiptLink(person, items, assignments, receiptMeta) {
+function buildReceiptLink(person, items, assignments, receiptMeta, payInfo) {
   const personItemsWithShare = items
     .map((it, i) => {
       const assignees = assignments[i] || []
@@ -487,11 +506,16 @@ function buildReceiptLink(person, items, assignments, receiptMeta) {
   const tip   = sub * TIP_RATE
   const total = sub + tax + tip
 
+  const payMethod = payInfo?.method === 'zelle' ? 'zelle' : 'venmo'
+  const payHandle = (payInfo?.[payMethod] || '').trim()
+
   const data = {
     name:  person.name,
     items: personItemsWithShare,
     sub, tax, tip, total,
     venue: receiptMeta?.venue || null,
+    payMethod,
+    payHandle,
   }
 
   try {
@@ -528,9 +552,27 @@ function ShareLinksPage({ people, items, assignments, receiptMeta, onDone, onBac
   const payer     = people.find(p => p.isPayer)
   const yourShare = payer ? getPersonTotal(items, assignments, payer.id) : 0
   const [copied, setCopied] = useState({})
+  const [payInfo, setPayInfo] = useState(loadPayInfo)
+  const payHandle = payInfo[payInfo.method] || ''
+
+  function setPayMethod(method) {
+    setPayInfo(prev => {
+      const next = { ...prev, method }
+      savePayInfo(next)
+      return next
+    })
+  }
+
+  function setPayHandle(value) {
+    setPayInfo(prev => {
+      const next = { ...prev, [prev.method]: value }
+      savePayInfo(next)
+      return next
+    })
+  }
 
   function copyLink(p) {
-    const link = buildReceiptLink(p, items, assignments, receiptMeta)
+    const link = buildReceiptLink(p, items, assignments, receiptMeta, payInfo)
     navigator.clipboard.writeText(link).catch(() => {
       const el = document.createElement('textarea')
       el.value = link
@@ -590,6 +632,39 @@ function ShareLinksPage({ people, items, assignments, receiptMeta, onDone, onBac
         <span className="sfo-total-amount">${youReceive.toFixed(2)}</span>
       </div>
 
+      <div className="sfo-card sfo-pay-card">
+        <div className="sfo-stepper-row">
+          <span className="sfo-stepper-label">How should they pay you?</span>
+        </div>
+        <div className="sfo-pay-toggle">
+          <button
+            type="button"
+            className={`sfo-chip${payInfo.method === 'venmo' ? ' sfo-chip-active' : ''}`}
+            style={payInfo.method === 'venmo' ? { background: '#EFF6FF', borderColor: '#3D95CE', color: '#1D4ED8' } : {}}
+            onClick={() => setPayMethod('venmo')}
+          >
+            Venmo
+          </button>
+          <button
+            type="button"
+            className={`sfo-chip${payInfo.method === 'zelle' ? ' sfo-chip-active' : ''}`}
+            style={payInfo.method === 'zelle' ? { background: '#F5F3FF', borderColor: '#7C3AED', color: '#6D28D9' } : {}}
+            onClick={() => setPayMethod('zelle')}
+          >
+            Zelle
+          </button>
+        </div>
+        <div className="sfo-card-divider" />
+        <div className="sfo-pay-handle-row">
+          <input
+            className="sfo-pay-handle-input"
+            value={payHandle}
+            onChange={e => setPayHandle(e.target.value)}
+            placeholder={payInfo.method === 'venmo' ? '@your-venmo-username' : 'Your Zelle email or phone'}
+          />
+        </div>
+      </div>
+
       <div className="sfo-sticky-bottom">
         <button type="button" className="continue-btn" onClick={onDone}>
           Done
@@ -604,6 +679,29 @@ function ShareLinksPage({ people, items, assignments, receiptMeta, onDone, onBac
 ══════════════════════════════════════════════════════════════════ */
 
 export function RecipientReceiptView({ data }) {
+  const payMethod = data.payMethod === 'zelle' ? 'zelle' : 'venmo'
+  const payHandle = data.payHandle || ''
+  const venmoUser = payHandle.replace(/^@/, '')
+  const [handleCopied, setHandleCopied] = useState(false)
+
+  function copyHandle() {
+    navigator.clipboard.writeText(payHandle).catch(() => {})
+    setHandleCopied(true)
+    setTimeout(() => setHandleCopied(false), 2200)
+  }
+
+  function payWithVenmo() {
+    const amount = data.total.toFixed(2)
+    const note   = data.venue ? `&note=${encodeURIComponent(data.venue)}` : ''
+    const appUrl = venmoUser ? `venmo://paycharge?txn=pay&recipients=${encodeURIComponent(venmoUser)}&amount=${amount}${note}` : null
+    const webUrl = `https://account.venmo.com/pay?txn=pay&amount=${amount}${venmoUser ? `&recipients=${encodeURIComponent(venmoUser)}` : ''}${note}`
+    openWithAppFallback(appUrl, webUrl)
+  }
+
+  function openZelleApp() {
+    openWithAppFallback('zellepay://', null)
+  }
+
   return (
     <div className="sfo-page" style={{ paddingBottom: 80 }}>
       <div className="sfo-recipient-brand">
@@ -650,28 +748,51 @@ export function RecipientReceiptView({ data }) {
         <span className="sfo-total-amount">${data.total.toFixed(2)}</span>
       </div>
 
-      <p className="venmo-pre-label" style={{ marginTop: 20 }}>Pay back with Venmo</p>
+      {payMethod === 'zelle' ? (
+        <>
+          <p className="venmo-pre-label" style={{ marginTop: 20 }}>Pay back with Zelle</p>
+          <div className="sfo-zelle-card">
+            <span className="sfo-zelle-handle">{payHandle || 'Ask them for their Zelle info'}</span>
+            {payHandle && (
+              <button
+                type="button"
+                className={`sfo-copy-btn${handleCopied ? ' sfo-copy-btn-done' : ''}`}
+                onClick={copyHandle}
+              >
+                {handleCopied ? <><CheckSmall /> Copied!</> : <><LinkIcon /> Copy</>}
+              </button>
+            )}
+          </div>
+          {isMobileDevice() && (
+            <button type="button" className="venmo-btn zelle-btn" onClick={openZelleApp}>
+              <span className="venmo-btn-text">Open</span>
+              <span className="venmo-btn-logo">Zelle</span>
+            </button>
+          )}
 
-      <a
-        className="venmo-btn"
-        href={`https://account.venmo.com/pay?amount=${data.total.toFixed(2)}${data.venue ? `&note=${encodeURIComponent(data.venue)}` : ''}`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <span className="venmo-btn-text">Pay with</span>
-        <span className="venmo-btn-logo">venmo</span>
-        <svg className="venmo-btn-icon" viewBox="0 0 24 24" fill="none">
-          <path d="M9 18l6-6-6-6" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </a>
+          <p className="venmo-secure">Send ${data.total.toFixed(2)} from your bank's Zelle{isMobileDevice() ? ' — opens your Zelle app if installed' : ''}</p>
+        </>
+      ) : (
+        <>
+          <p className="venmo-pre-label" style={{ marginTop: 20 }}>Pay back with Venmo</p>
 
-      <p className="venmo-secure">
-        <svg viewBox="0 0 12 14" fill="none" className="venmo-lock-icon">
-          <rect x="1" y="6" width="10" height="7" rx="2" fill="currentColor"/>
-          <path d="M3.5 6V4a2.5 2.5 0 015 0v2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
-        </svg>
-        Secure payment via Venmo
-      </p>
+          <button type="button" className="venmo-btn" onClick={payWithVenmo}>
+            <span className="venmo-btn-text">Pay with</span>
+            <span className="venmo-btn-logo">venmo</span>
+            <svg className="venmo-btn-icon" viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+
+          <p className="venmo-secure">
+            <svg viewBox="0 0 12 14" fill="none" className="venmo-lock-icon">
+              <rect x="1" y="6" width="10" height="7" rx="2" fill="currentColor"/>
+              <path d="M3.5 6V4a2.5 2.5 0 015 0v2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+            </svg>
+            Secure payment via Venmo
+          </p>
+        </>
+      )}
     </div>
   )
 }
