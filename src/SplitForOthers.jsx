@@ -214,17 +214,13 @@ function AddPeoplePage({ people, setPeople, onContinue, onBack }) {
           {people.map(p => (
             <div key={p.id} className="sfo-person-row">
               <span className="sfo-drag-handle"><GripIcon /></span>
-              {p.isPayer ? (
-                <span className="sfo-person-name">{p.name}</span>
-              ) : (
-                <input
-                  className="sfo-person-name-input"
-                  value={p.name}
-                  onChange={e => updateName(p.id, e.target.value)}
-                  placeholder="Enter name"
-                  autoFocus={p.name === ''}
-                />
-              )}
+              <input
+                className="sfo-person-name-input"
+                value={p.name}
+                onChange={e => updateName(p.id, e.target.value)}
+                placeholder={p.isPayer ? 'Your name' : 'Enter name'}
+                autoFocus={p.name === ''}
+              />
               {p.isPayer && <span className="sfo-paid-pill">Paid</span>}
               {!p.isPayer && (
                 <button type="button" className="sfo-remove-btn" onClick={() => removePerson(p.id)} aria-label="Remove">
@@ -395,9 +391,12 @@ function AssignItemsPage({ people, items, assignments, setAssignments, onContinu
 
 function ReviewReceiptsPage({ people, items, assignments, receiptMeta, onContinue, onBack }) {
   const nonPayers    = people.filter(p => !p.isPayer)
-  const [activePerson, setActivePerson] = useState(nonPayers[0]?.id ?? null)
+  const [activePerson, setActivePerson] = useState(nonPayers[0]?.id ?? people[0]?.id ?? null)
 
-  const activeName   = people.find(p => p.id === activePerson)?.name ?? ''
+  const activePersonObj = people.find(p => p.id === activePerson)
+  const activeName   = activePersonObj?.name ?? ''
+  const isPayer       = activePersonObj?.isPayer ?? false
+  const possessive    = isPayer ? 'Your' : `${activeName}'s`
   const personItems  = items
     .map((it, i) => {
       const assignees = assignments[i] || []
@@ -423,19 +422,19 @@ function ReviewReceiptsPage({ people, items, assignments, receiptMeta, onContinu
         <p className="iv-subtitle">Check each person's total before sending.</p>
       </div>
 
-      <ChipRow people={nonPayers} active={activePerson} onSelect={setActivePerson} />
+      <ChipRow people={people} active={activePerson} onSelect={setActivePerson} />
 
       <div className="iv-receipt-card">
         <ZigZagTop />
         <div className="iv-receipt-content">
           <div className="sfo-review-head">
-            <span className="sfo-review-name">{activeName}'s receipt</span>
+            <span className="sfo-review-name">{possessive} receipt</span>
             {venue && <span className="sfo-review-venue">{venue}</span>}
           </div>
           <div className="iv-dashed" />
 
           {personItems.length === 0
-            ? <p className="sfo-empty-note">No items assigned to {activeName}.</p>
+            ? <p className="sfo-empty-note">No items assigned to {isPayer ? 'you' : activeName}.</p>
             : (
               <div className="sfo-review-items">
                 {personItems.map((item, i) => (
@@ -459,7 +458,7 @@ function ReviewReceiptsPage({ people, items, assignments, receiptMeta, onContinu
       </div>
 
       <div className="sfo-total-card">
-        <span className="sfo-total-label">{activeName} owes</span>
+        <span className="sfo-total-label">{isPayer ? 'Your share' : `${activeName} owes`}</span>
         <span className="sfo-total-amount">${total.toFixed(2)}</span>
       </div>
 
@@ -526,6 +525,8 @@ function CheckSmall() {
 
 function ShareLinksPage({ people, items, assignments, receiptMeta, onDone, onBack }) {
   const nonPayers = people.filter(p => !p.isPayer)
+  const payer     = people.find(p => p.isPayer)
+  const yourShare = payer ? getPersonTotal(items, assignments, payer.id) : 0
   const [copied, setCopied] = useState({})
 
   function copyLink(p) {
@@ -554,6 +555,15 @@ function ShareLinksPage({ people, items, assignments, receiptMeta, onDone, onBac
       </div>
 
       <div className="sfo-request-list">
+        {payer && (
+          <div className="sfo-request-card">
+            <div className="sfo-req-left">
+              <span className="sfo-req-name">{payer.name}</span>
+              <span className="sfo-req-amount">${yourShare.toFixed(2)}</span>
+            </div>
+            <span className="sfo-paid-pill">Your share</span>
+          </div>
+        )}
         {nonPayers.map(p => {
           const total     = getPersonTotal(items, assignments, p.id)
           const isCopied  = !!copied[p.id]
@@ -675,7 +685,7 @@ export function SplitForOthersFlow({ items: rawItems, receiptMeta, onDone, onBac
 
   const [page, setPage] = useState('addPeople')
   const [people, setPeople] = useState(() => [
-    { id: uid(), name: 'Jessica (you)', isPayer: true },
+    { id: uid(), name: 'You', isPayer: true },
   ])
   const [assignments, setAssignments] = useState({})
 
