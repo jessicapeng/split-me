@@ -705,7 +705,13 @@ export function RecipientReceiptView({ data }) {
   }
 
   function openZelleApp() {
-    openWithAppFallback('zellepay://', null)
+    // Zelle has no officially documented deep-link scheme — this is a
+    // best-effort attempt some bank Zelle integrations recognize. It always
+    // falls back to Zelle's site so the button never dead-ends.
+    const amount = data.total.toFixed(2)
+    const note   = data.venue ? `&note=${encodeURIComponent(data.venue)}` : ''
+    const appUrl = payHandle ? `zelle://pay?recipient=${encodeURIComponent(payHandle)}&amount=${amount}${note}` : 'zelle://'
+    openWithAppFallback(appUrl, 'https://www.zellepay.com/')
   }
 
   return (
@@ -757,6 +763,24 @@ export function RecipientReceiptView({ data }) {
       {payMethod === 'zelle' ? (
         <>
           <p className="venmo-pre-label" style={{ marginTop: 20 }}>Pay back with Zelle</p>
+
+          {isMobileDevice() ? (
+            <button type="button" className="venmo-btn zelle-btn" onClick={openZelleApp}>
+              <span className="venmo-btn-text">Open</span>
+              <span className="venmo-btn-logo">Zelle</span>
+            </button>
+          ) : (
+            <a
+              className="venmo-btn zelle-btn"
+              href="https://www.zellepay.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span className="venmo-btn-text">Go to</span>
+              <span className="venmo-btn-logo">Zelle</span>
+            </a>
+          )}
+
           <div className="sfo-zelle-card">
             <span className="sfo-zelle-handle">{payHandle || 'Ask them for their Zelle info'}</span>
             {payHandle && (
@@ -769,14 +793,8 @@ export function RecipientReceiptView({ data }) {
               </button>
             )}
           </div>
-          {isMobileDevice() && (
-            <button type="button" className="venmo-btn zelle-btn" onClick={openZelleApp}>
-              <span className="venmo-btn-text">Open</span>
-              <span className="venmo-btn-logo">Zelle</span>
-            </button>
-          )}
 
-          <p className="venmo-secure">Send ${data.total.toFixed(2)} from your bank's Zelle{isMobileDevice() ? ' — opens your Zelle app if installed' : ''}</p>
+          <p className="venmo-secure">Send ${data.total.toFixed(2)} to this Zelle contact{isMobileDevice() ? ' — opens your bank\'s Zelle if linked' : ' from your bank\'s app'}</p>
         </>
       ) : (
         <>
