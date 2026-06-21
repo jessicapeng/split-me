@@ -750,7 +750,7 @@ function App() {
       setView(choice === 'others' ? 'split-for-others' : 'items')
     } catch (err) {
       setError(err.message || 'Something went wrong.')
-      setView('landing')
+      setView('photo')
     } finally {
       setLoading(false)
     }
