@@ -366,12 +366,12 @@
   .pill-name, .pill-amount { font-size: 9px; }
   .settled-pill { font-size: 9px; padding: 4px 8px; gap: 3px; }
 
-  .feature-row { height: 96px; margin-top: 10px; border-radius: 22px; }
-  .feature-item { padding: 10px 6px 8px; gap: 3px; }
+  .feature-row { width: 85%; height: 96px; margin-top: 10px; border-radius: 22px; }
+  .feature-item { padding: 10px 4px 8px; gap: 3px; }
   .feature-icon-bg { width: 30px; height: 30px; }
   .feature-icon-bg svg { width: 16px; height: 16px; }
-  .feature-label { font-size: 12px; }
-  .feature-sub { font-size: 9.5px; max-width: 80px; }
+  .feature-label { font-size: 11px; }
+  .feature-sub { font-size: 8.5px; max-width: 72px; }
 
   .cta-section { margin-top: 16px; }
 }
