@@ -252,8 +252,8 @@ function SplitPanel() {
     <div className="split-panel">
       <div className="split-title">Split between 3</div>
       <UserPill letter="A" name="You"   amount="$97.25"  avatarBg="#E8EEFF" letterColor="#5B6EF5" />
-      <UserPill letter="B" name="Jessica"   amount="$110.25"  avatarBg="#E3F5ED" letterColor="#22A55B" />
-      <UserPill letter="C" name="Jarisse" amount="$91.50" avatarBg="#F0EBF8" letterColor="#9B59B6" />
+      <UserPill letter="J" name="Jess"   amount="$110.25"  avatarBg="#E3F5ED" letterColor="#22A55B" />
+      <UserPill letter="M" name="Mike" amount="$91.50" avatarBg="#F0EBF8" letterColor="#9B59B6" />
       <div className="settled-pill">
         <CheckIcon />
         <span>All settled up!</span>
