@@ -547,13 +547,19 @@ function CheckSmall() {
    PAGE 4 — Share Links
 ══════════════════════════════════════════════════════════════════ */
 
-function ShareLinksPage({ people, items, assignments, receiptMeta, onDone, onBack }) {
+function ShareLinksPage({ people, items, assignments, receiptMeta, onBack }) {
   const nonPayers = people.filter(p => !p.isPayer)
   const payer     = people.find(p => p.isPayer)
   const yourShare = payer ? getPersonTotal(items, assignments, payer.id) : 0
   const [copied, setCopied] = useState({})
   const [payInfo, setPayInfo] = useState(loadPayInfo)
+  const [saved, setSaved] = useState(false)
   const payHandle = payInfo[payInfo.method] || ''
+
+  function confirmSaved() {
+    setSaved(true)
+    setTimeout(() => setSaved(false), 1800)
+  }
 
   function setPayMethod(method) {
     setPayInfo(prev => {
@@ -666,8 +672,8 @@ function ShareLinksPage({ people, items, assignments, receiptMeta, onDone, onBac
       </div>
 
       <div className="sfo-sticky-bottom">
-        <button type="button" className="continue-btn" onClick={onDone}>
-          Done
+        <button type="button" className="continue-btn" onClick={confirmSaved}>
+          {saved ? <><CheckSmall /> Saved</> : 'Done'}
         </button>
       </div>
     </div>
@@ -801,7 +807,7 @@ export function RecipientReceiptView({ data }) {
    Main Export
 ══════════════════════════════════════════════════════════════════ */
 
-export function SplitForOthersFlow({ items: rawItems, receiptMeta, onDone, onBack }) {
+export function SplitForOthersFlow({ items: rawItems, receiptMeta, onBack }) {
   const items = (rawItems && rawItems.length > 0) ? rawItems : DEMO_ITEMS
 
   const [page, setPage] = useState('addPeople')
@@ -847,7 +853,6 @@ export function SplitForOthersFlow({ items: rawItems, receiptMeta, onDone, onBac
       items={items}
       assignments={assignments}
       receiptMeta={receiptMeta}
-      onDone={onDone}
       onBack={() => setPage('reviewReceipts')}
     />
   )

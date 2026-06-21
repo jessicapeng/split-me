@@ -784,7 +784,6 @@ function App() {
         <SplitForOthersFlow
           items={items}
           receiptMeta={receiptMeta}
-          onDone={() => { setView('landing'); setItems(null); setError(null); setReceiptMeta({ venue: null, date: null }) }}
           onBack={() => setView('choice')}
         />
       ) : view === 'items' ? (
