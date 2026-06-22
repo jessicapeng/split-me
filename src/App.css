@@ -123,6 +123,7 @@
 
 .demo-card {
   width: 85%;
+  box-sizing: border-box;
   background: #ffffff;
   border-radius: 32px;
   padding: 20px;
