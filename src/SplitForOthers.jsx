@@ -16,6 +16,7 @@ const DEMO_ITEMS = [
 
 const TAX_RATE  = 0.085
 const TIP_RATE  = 0.18
+const MAX_EVEN  = 19
 
 const PALETTE = [
   { chipBg: '#EFF6FF', chipBorder: '#93C5FD', chipText: '#1D4ED8', tagBg: '#DBEAFE', tagText: '#1E40AF' },
@@ -172,7 +173,7 @@ function ChipRow({ people, active, onSelect }) {
    PAGE 1 — Add People
 ══════════════════════════════════════════════════════════════════ */
 
-function AddPeoplePage({ people, setPeople, onContinue, onBack }) {
+function AddPeoplePage({ people, setPeople, splitMode, setSplitMode, evenCount, setEvenCount, onContinue, onBack }) {
   function updateName(id, name) {
     setPeople(prev => prev.map(p => p.id === id ? { ...p, name } : p))
   }
@@ -199,7 +200,7 @@ function AddPeoplePage({ people, setPeople, onContinue, onBack }) {
 
   const nonPayers = people.filter(p => !p.isPayer)
   const allNamed = people.every(p => p.name.trim() !== '')
-  const canContinue = nonPayers.length > 0 && allNamed
+  const canContinue = splitMode === 'even' ? evenCount > 0 : (nonPayers.length > 0 && allNamed)
 
   return (
     <div className="sfo-page">
@@ -210,50 +211,95 @@ function AddPeoplePage({ people, setPeople, onContinue, onBack }) {
         <p className="iv-subtitle">Add everyone you're splitting with.</p>
       </div>
 
-      <div className="sfo-card">
-        {/* Stepper */}
-        <div className="sfo-stepper-row">
-          <span className="sfo-stepper-label">How many people?</span>
-          <div className="sfo-stepper">
-            <button
-              type="button"
-              className="sfo-stepper-btn"
-              onClick={() => stepperChange(-1)}
-              disabled={nonPayers.length === 0}
-            >−</button>
-            <span className="sfo-stepper-num">{people.length}</span>
-            <button type="button" className="sfo-stepper-btn" onClick={() => stepperChange(1)}>+</button>
-          </div>
-        </div>
-
-        <div className="sfo-card-divider" />
-
-        {/* People list */}
-        <div className="sfo-people-list">
-          {people.map(p => (
-            <div key={p.id} className="sfo-person-row">
-              <span className="sfo-drag-handle"><GripIcon /></span>
-              <input
-                className="sfo-person-name-input"
-                value={p.name}
-                onChange={e => updateName(p.id, e.target.value)}
-                placeholder={p.isPayer ? 'Your name' : 'Enter name'}
-                autoFocus={p.name === ''}
-              />
-              {p.isPayer && <span className="sfo-paid-pill">Paid</span>}
-              {!p.isPayer && (
-                <button type="button" className="sfo-remove-btn" onClick={() => removePerson(p.id)} aria-label="Remove">
-                  <XCircle />
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-
-        <button type="button" className="sfo-add-btn" onClick={addEmptyPerson}>
-          + Add another person
+      <div className="sfo-pay-toggle">
+        <button
+          type="button"
+          className={`sfo-chip${splitMode === 'item' ? ' sfo-chip-active' : ''}`}
+          style={splitMode === 'item' ? { background: '#EFF6FF', borderColor: '#3D95CE', color: '#1D4ED8' } : {}}
+          onClick={() => setSplitMode('item')}
+        >
+          Split by item
+        </button>
+        <button
+          type="button"
+          className={`sfo-chip${splitMode === 'even' ? ' sfo-chip-active' : ''}`}
+          style={splitMode === 'even' ? { background: '#F5F3FF', borderColor: '#7C3AED', color: '#6D28D9' } : {}}
+          onClick={() => setSplitMode('even')}
+        >
+          Split evenly
         </button>
       </div>
+
+      {splitMode === 'even' ? (
+        <div className="sfo-card">
+          <div className="sfo-stepper-row">
+            <span className="sfo-stepper-label">How many other people?</span>
+            <div className="sfo-stepper">
+              <button
+                type="button"
+                className="sfo-stepper-btn"
+                onClick={() => setEvenCount(c => Math.max(1, c - 1))}
+                disabled={evenCount <= 1}
+              >−</button>
+              <span className="sfo-stepper-num">{evenCount}</span>
+              <button
+                type="button"
+                className="sfo-stepper-btn"
+                onClick={() => setEvenCount(c => Math.min(MAX_EVEN, c + 1))}
+              >+</button>
+            </div>
+          </div>
+          <div className="sfo-card-divider" />
+          <p className="sfo-modal-hint" style={{ padding: '14px 20px' }}>
+            The bill will be split equally between you and {evenCount} other{evenCount > 1 ? 's' : ''} — no need to enter names.
+          </p>
+        </div>
+      ) : (
+        <div className="sfo-card">
+          {/* Stepper */}
+          <div className="sfo-stepper-row">
+            <span className="sfo-stepper-label">How many people?</span>
+            <div className="sfo-stepper">
+              <button
+                type="button"
+                className="sfo-stepper-btn"
+                onClick={() => stepperChange(-1)}
+                disabled={nonPayers.length === 0}
+              >−</button>
+              <span className="sfo-stepper-num">{people.length}</span>
+              <button type="button" className="sfo-stepper-btn" onClick={() => stepperChange(1)}>+</button>
+            </div>
+          </div>
+
+          <div className="sfo-card-divider" />
+
+          {/* People list */}
+          <div className="sfo-people-list">
+            {people.map(p => (
+              <div key={p.id} className="sfo-person-row">
+                <span className="sfo-drag-handle"><GripIcon /></span>
+                <input
+                  className="sfo-person-name-input"
+                  value={p.name}
+                  onChange={e => updateName(p.id, e.target.value)}
+                  placeholder={p.isPayer ? 'Your name' : 'Enter name'}
+                  autoFocus={p.name === ''}
+                />
+                {p.isPayer && <span className="sfo-paid-pill">Paid</span>}
+                {!p.isPayer && (
+                  <button type="button" className="sfo-remove-btn" onClick={() => removePerson(p.id)} aria-label="Remove">
+                    <XCircle />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <button type="button" className="sfo-add-btn" onClick={addEmptyPerson}>
+            + Add another person
+          </button>
+        </div>
+      )}
 
       <div className="sfo-sticky-bottom">
         <button
@@ -829,16 +875,37 @@ export function SplitForOthersFlow({ items: rawItems, receiptMeta, onBack }) {
   const items = (rawItems && rawItems.length > 0) ? rawItems : DEMO_ITEMS
 
   const [page, setPage] = useState('addPeople')
+  const [splitMode, setSplitMode] = useState('item')
   const [people, setPeople] = useState(() => [
     { id: uid(), name: 'You', isPayer: true },
   ])
+  const [evenCount, setEvenCount] = useState(1)
   const [assignments, setAssignments] = useState({})
+
+  function handleAddPeopleContinue() {
+    if (splitMode === 'even') {
+      const payer = people.find(p => p.isPayer) ?? { id: uid(), name: 'You', isPayer: true }
+      const friends = Array.from({ length: evenCount }, (_, i) => ({ id: uid(), name: `Friend ${i + 1}`, isPayer: false }))
+      const evenPeople = [payer, ...friends]
+      const evenAssignments = {}
+      items.forEach((_, i) => { evenAssignments[i] = evenPeople.map(p => p.id) })
+      setPeople(evenPeople)
+      setAssignments(evenAssignments)
+      setPage('reviewReceipts')
+    } else {
+      setPage('assignItems')
+    }
+  }
 
   if (page === 'addPeople') return (
     <AddPeoplePage
       people={people}
       setPeople={setPeople}
-      onContinue={() => setPage('assignItems')}
+      splitMode={splitMode}
+      setSplitMode={setSplitMode}
+      evenCount={evenCount}
+      setEvenCount={setEvenCount}
+      onContinue={handleAddPeopleContinue}
       onBack={onBack}
     />
   )
@@ -861,7 +928,7 @@ export function SplitForOthersFlow({ items: rawItems, receiptMeta, onBack }) {
       assignments={assignments}
       receiptMeta={receiptMeta}
       onContinue={() => setPage('sendRequests')}
-      onBack={() => setPage('assignItems')}
+      onBack={() => setPage(splitMode === 'even' ? 'addPeople' : 'assignItems')}
     />
   )
 
