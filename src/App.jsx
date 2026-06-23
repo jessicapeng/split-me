@@ -711,26 +711,19 @@ function App() {
   }
 
   const handleSubmit = async () => {
-    const apiKey = import.meta.env.VITE_OPENAI_API_KEY
-    if (!apiKey) { setError('Add your OpenAI API key to .env'); return }
-    if (!photo)  { setError('Please add a receipt photo first.'); return }
+    if (!photo) { setError('Please add a receipt photo first.'); return }
     setError(null)
     setView('choice')
 
     const apiPromise = (async () => {
-      const prompt = `You are helping split a restaurant receipt.\n\nExtract the receipt details and return ONLY valid JSON, no markdown:\n{\n  "venue": string or null,\n  "date": string or null,\n  "items": [\n    { "name": string, "price": number }\n  ]\n}\n\nFor venue: the restaurant/cafe name. For date: the date/time shown. Ignore tax and tip; list only the main food/drink items and their individual prices.`
-      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      const res = await fetch('/api/itemize-receipt', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          max_tokens: 1024,
-          messages: [{ role: 'user', content: [{ type: 'text', text: prompt }, { type: 'image_url', image_url: { url: photo } }] }],
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ photo }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error?.message || res.statusText)
-      const text = data.choices?.[0]?.message?.content?.trim()
+      if (!res.ok) throw new Error(data.error || res.statusText)
+      const text = data.text
       if (!text) throw new Error('No response from OpenAI')
       const parsed = parseJsonFromText(text)
       if (!parsed || !Array.isArray(parsed.items)) throw new Error('Unexpected format from OpenAI.')

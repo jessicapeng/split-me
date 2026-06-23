@@ -13,11 +13,16 @@ Open the URL in your browser (e.g. `http://localhost:5173`). To test on your pho
 
 ## OpenAI (itemize receipt)
 
-1. Copy `.env.example` to `.env`.
-2. Add your API key: `VITE_OPENAI_API_KEY=sk-...` (get one at [platform.openai.com/api-keys](https://platform.openai.com/api-keys)).
-3. Restart the dev server. Take a photo of a receipt and tap **Itemize receipt** to send the image to OpenAI and get an itemized list.
+The OpenAI call happens server-side, in the Vercel serverless function at `api/itemize-receipt.js` — the key never reaches the browser.
 
-**Note:** The key is embedded in the client bundle. For production, use a backend that holds the key and proxies requests.
+1. Copy `.env.example` to `.env`.
+2. Add your API key: `OPENAI_API_KEY=sk-...` (get one at [platform.openai.com/api-keys](https://platform.openai.com/api-keys)). Note: no `VITE_` prefix — that prefix tells Vite to expose a var to client code, which is exactly what we don't want for a secret.
+3. Local dev needs the serverless function running alongside the frontend, so use the Vercel CLI instead of plain `vite`:
+   ```bash
+   npx vercel dev
+   ```
+   Take a photo of a receipt and tap **Itemize receipt** to send the image through `/api/itemize-receipt` and get an itemized list.
+4. On Vercel, set `OPENAI_API_KEY` (no `VITE_` prefix) under Project Settings → Environment Variables, then redeploy.
 
 ## Build for production
 
