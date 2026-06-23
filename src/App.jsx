@@ -671,6 +671,26 @@ function ChoiceScreen({ onSelect, onBack }) {
 
 /* ── Main App ─────────────────────────────────────────────────── */
 
+// Phone camera photos easily exceed Vercel's ~4.5MB serverless request body
+// limit once base64-encoded. Downscaling keeps plenty of resolution for the
+// model to read item names/prices while comfortably fitting under that cap.
+function downscaleImage(dataUrl, maxDim = 1600, quality = 0.82) {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => {
+      const scale = Math.min(1, maxDim / Math.max(img.width, img.height))
+      const canvas = document.createElement('canvas')
+      canvas.width = Math.round(img.width * scale)
+      canvas.height = Math.round(img.height * scale)
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+      resolve(canvas.toDataURL('image/jpeg', quality))
+    }
+    img.onerror = reject
+    img.src = dataUrl
+  })
+}
+
 function decodeReceiptHash() {
   try {
     const hash = window.location.hash
@@ -700,8 +720,14 @@ function App() {
     const file = e.target.files?.[0]
     if (!file) return
     const reader = new FileReader()
-    reader.onload = () => {
-      setPhoto(reader.result)
+    reader.onload = async () => {
+      let photoUrl = reader.result
+      try {
+        photoUrl = await downscaleImage(reader.result)
+      } catch {
+        // Fall back to the original if downscaling fails for any reason.
+      }
+      setPhoto(photoUrl)
       setItems(null)
       setError(null)
       setView('photo')
