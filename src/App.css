@@ -300,7 +300,8 @@
 /* ── Feature row ─────────────────────────────────────────────── */
 
 .feature-row {
-  width: 100%;
+  width: 85%;
+  box-sizing: border-box;
   margin-top: 22px;
   display: flex;
   background: #ffffff;
@@ -367,7 +368,7 @@
   .pill-name, .pill-amount { font-size: 9px; }
   .settled-pill { font-size: 9px; padding: 4px 8px; gap: 3px; }
 
-  .feature-row { width: 85%; height: 96px; margin-top: 10px; border-radius: 22px; }
+  .feature-row { height: 96px; margin-top: 10px; border-radius: 22px; }
   .feature-item { padding: 10px 4px 8px; gap: 3px; }
   .feature-icon-bg { width: 30px; height: 30px; }
   .feature-icon-bg svg { width: 16px; height: 16px; }
