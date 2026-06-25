@@ -868,7 +868,7 @@ function App() {
 
           <div className="feature-row">
             <FeatureItem icon={<ScanFeatureIcon />} label="Scan"      sublabel="Snap a photo of the bill"            bg="#EEF0FF" border />
-            <FeatureItem icon={<CalcFeatureIcon />} label="Calculate" sublabel="Detect items and total instantly"  bg="#E8F8F2" border />
+            <FeatureItem icon={<CalcFeatureIcon />} label="Calculate" sublabel="Detect and total items"  bg="#E8F8F2" border />
             <FeatureItem icon={<SplitFeatureIcon />} label="Split"    sublabel="Divide fairly and settle up"          bg="#F3EDFA" />
           </div>
 
