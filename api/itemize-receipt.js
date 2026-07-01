@@ -1,9 +1,35 @@
 // Vercel serverless function. Holds the OpenAI key server-side so it's
 // never bundled into client JS — the browser calls this route instead of
 // calling OpenAI directly.
+
+// Per-IP sliding-window rate limit. Lives in module scope so it persists
+// across requests on a warm instance (resets on cold start — fine for
+// throttling casual spam, not a hard guarantee).
+const RATE_LIMIT = 5
+const RATE_WINDOW_MS = 60 * 60 * 1000 // 1 hour
+const requestLog = new Map()
+
+function isRateLimited(ip) {
+  const now = Date.now()
+  const timestamps = (requestLog.get(ip) || []).filter((t) => now - t < RATE_WINDOW_MS)
+  if (timestamps.length >= RATE_LIMIT) {
+    requestLog.set(ip, timestamps)
+    return true
+  }
+  timestamps.push(now)
+  requestLog.set(ip, timestamps)
+  return false
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' })
+    return
+  }
+
+  const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket?.remoteAddress || 'unknown'
+  if (isRateLimited(ip)) {
+    res.status(429).json({ error: 'Too many requests. Please try again later.' })
     return
   }
 
